@@ -1,0 +1,141 @@
+﻿{% extends "base.html" %}
+{% set active_page = "analytics" %}
+{% block title %}Multi-Year Safety Analytics & Insights{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h2 class="h3 fw-bold text-dark mb-1"><i class="bi bi-graph-up text-primary me-2"></i>Multi-Year Crime Pattern Analytics (2021–2024)</h2>
+  <p class="text-muted mb-0">Multivariate statistical insights across Years, States, Cities, and Crime Classifications.</p>
+</div>
+
+<!-- ANNUAL COMPARISON TABLE -->
+<div class="card shadow-sm border-0 mb-4 bg-white">
+  <div class="card-body p-4">
+    <h5 class="h6 fw-bold mb-3 border-bottom pb-2">
+      <i class="bi bi-calendar-range text-primary me-2"></i>Year-by-Year Crime Trajectory Summary
+    </h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light small text-uppercase">
+          <tr>
+            <th>Year</th>
+            <th>Total Incidents</th>
+            <th>Most Prevalent Crime</th>
+            <th>Highest Activity State</th>
+            <th>Highest Activity City</th>
+            <th>High-Risk Share (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ys in yearly_stats %}
+          <tr>
+            <td><strong class="badge bg-dark fs-6">{{ ys.year }}</strong></td>
+            <td><span class="fw-bold text-primary">{{ ys.total }}</span> reported</td>
+            <td><span class="badge bg-info text-dark">{{ ys.top_crime }}</span></td>
+            <td><span class="badge bg-light text-dark border">{{ ys.top_state }}</span></td>
+            <td><span class="badge bg-secondary">{{ ys.top_city }}</span></td>
+            <td>
+              <div class="d-flex align-items-center">
+                <span class="fw-bold text-danger me-2">{{ ys.high_risk_pct }}%</span>
+                <div class="progress flex-grow-1" style="height: 6px;">
+                  <div class="progress-bar bg-danger" style="width: {{ ys.high_risk_pct }}%"></div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- DATA-DRIVEN SAFETY INSIGHTS CARD -->
+<div class="card shadow-sm border-0 mb-4 bg-white">
+  <div class="card-body p-4">
+    <div class="d-flex align-items-center mb-3">
+      <div class="bg-primary text-white p-2 rounded-3 me-3">
+        <i class="bi bi-lightbulb-fill fs-4"></i>
+      </div>
+      <div>
+        <h4 class="h5 fw-bold mb-0">Data-Driven Safety Insights</h4>
+        <small class="text-muted">Descriptive findings grounded in multi-year empirical historical records</small>
+      </div>
+    </div>
+    
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="p-3 border rounded bg-light">
+          <div class="fw-bold text-primary mb-1"><i class="bi bi-calendar3 me-1"></i> Multi-Year Progression (2021-2024)</div>
+          <p class="small text-secondary mb-0">
+            Reported incident logs rose from 457 in 2021 to over 650 annually in 2023 and 2024, driven partially by increased reporting of digital and vehicular property crimes.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 border rounded bg-light">
+          <div class="fw-bold text-primary mb-1"><i class="bi bi-shield-check me-1"></i> Incident Type Preponderance</div>
+          <p class="small text-secondary mb-0">
+            <strong>Theft</strong>, <strong>Cyber Fraud</strong>, and <strong>Vehicle Theft</strong> together account for over 60% of all reported offenses across the 8 analyzed metropolitan hubs.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 border rounded bg-light">
+          <div class="fw-bold text-primary mb-1"><i class="bi bi-clock me-1"></i> Temporal Variance</div>
+          <p class="small text-secondary mb-0">
+            Across all 4 recorded years, <strong>Evening and Night</strong> categories account for 55% of all occurrences, with commercial markets and transit corridors recording peak density.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 border rounded bg-light">
+          <div class="fw-bold text-primary mb-1"><i class="bi bi-geo-alt me-1"></i> Geographical Distribution</div>
+          <p class="small text-secondary mb-0">
+            Metropolitan centers like Delhi, Mumbai, and Bengaluru account for higher absolute incident volumes, but suburban zones maintain higher proportions of low-severity cases.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title">Annual Incident Trajectory (2021–2024)</div>
+      <div style="height: 280px;">
+        <canvas id="yearlyTrendChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title">Incidents Across Crime Classifications</div>
+      <div style="height: 280px;">
+        <canvas id="crimeTypeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title">State-Level Comparison</div>
+      <div style="height: 280px;">
+        <canvas id="stateChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title">Severity Breakdown Ratio</div>
+      <div style="height: 280px;">
+        <canvas id="severityChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

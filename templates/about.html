@@ -1,0 +1,114 @@
+﻿{% extends "base.html" %}
+{% set active_page = "about" %}
+{% block title %}About - CrimeWatch Analytics{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <!-- Project Overview -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body p-4">
+        <h3 class="h4 fw-bold mb-3">Project Overview</h3>
+        <p class="text-secondary">
+          <strong>CrimeWatch Analytics</strong> is a beginner-friendly, academic Data Science and Machine Learning web application developed as a first major portfolio project for a B.Sc Data Science curriculum.
+        </p>
+        <p class="text-secondary">
+          The purpose of this project is to analyze historical crime data, uncover temporal and spatial patterns, present descriptive visualizations, and estimate broad scenario risk categories using a trained Random Forest model.
+        </p>
+
+        <h4 class="h5 fw-bold mt-4 mb-2">Project Workflow</h4>
+        <div class="p-3 bg-light rounded text-center font-monospace small">
+          Crime Dataset &rarr; Data Cleaning &rarr; Exploratory Data Analysis &rarr; Feature Engineering &rarr; Random Forest ML &rarr; Flask Web App + MySQL &rarr; Safety Insights
+        </div>
+
+        <h4 class="h5 fw-bold mt-4 mb-2">Technology Stack</h4>
+        <div class="row g-2">
+          <div class="col-sm-6">
+            <ul class="list-group list-group-flush small">
+              <li class="list-group-item"><strong>Backend:</strong> Python 3.13, Flask 3.1</li>
+              <li class="list-group-item"><strong>Data Science:</strong> Pandas, NumPy, Scikit-learn, Joblib</li>
+              <li class="list-group-item"><strong>Database:</strong> MySQL / SQLite Fail-safe</li>
+            </ul>
+          </div>
+          <div class="col-sm-6">
+            <ul class="list-group list-group-flush small">
+              <li class="list-group-item"><strong>Frontend:</strong> HTML5, CSS3, Bootstrap 5</li>
+              <li class="list-group-item"><strong>Visualization:</strong> Chart.js</li>
+              <li class="list-group-item"><strong>Reporting:</strong> Microsoft Excel, Microsoft Power BI</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ethical Framework -->
+    <div class="card shadow-sm border-0 mb-4 border-start border-primary border-4">
+      <div class="card-body p-4">
+        <h3 class="h4 fw-bold text-primary mb-3">Ethical Principles & Anti-Surveillance Guarantee</h3>
+        <p class="text-secondary small">
+          This system is strictly designed as an academic data analytics tool and explicitly rejects mass-surveillance mechanisms:
+        </p>
+        <ul class="small text-secondary mb-3">
+          <li><strong>No Individual Profiling:</strong> The model never evaluates or predicts individuals, suspect behaviors, or demographic groups.</li>
+          <li><strong>No Camera / CCTV / Facial Recognition:</strong> Analysis is strictly performed on aggregate historical incident statistics.</li>
+          <li><strong>No Predictive Law Enforcement:</strong> Predictions are statistical classifications of contextual scenario attributes, not deterministic forecasts of future crimes.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Project Limitations -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body p-4">
+        <h3 class="h4 fw-bold mb-3">System Limitations</h3>
+        <ul class="small text-secondary mb-0">
+          <li><strong>Reported vs. Actual Crime:</strong> The dataset reflects reported incidents; unreported offenses cannot be accounted for by the model.</li>
+          <li><strong>Synthetic Nature:</strong> The educational dataset simulates realistic urban distributions but must not be cited as official municipal law enforcement records.</li>
+          <li><strong>Temporal Dynamics:</strong> Crime patterns fluctuate with policy and community changes; models require periodic retraining with fresh data.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Quick Specs Card -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-3">Academic Snapshot</h5>
+        <div class="mb-3">
+          <small class="text-muted d-block">Project Name</small>
+          <strong>Crime Statistics & Safety Analytics</strong>
+        </div>
+        <div class="mb-3">
+          <small class="text-muted d-block">Student Degree</small>
+          <strong>B.Sc Data Science</strong>
+        </div>
+        <div class="mb-3">
+          <small class="text-muted d-block">Machine Learning Model</small>
+          <strong>Random Forest Classifier (100 Trees)</strong>
+        </div>
+        <div class="mb-3">
+          <small class="text-muted d-block">Test Accuracy</small>
+          <strong class="text-success">87.0%</strong>
+        </div>
+        <div>
+          <small class="text-muted d-block">Total Dataset Records</small>
+          <strong>1,000 Incidents (Cleaned)</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Future Scope Card -->
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-3">Future Scope</h5>
+        <ul class="small text-secondary ps-3 mb-0">
+          <li>Ingestion of multi-year government open data portals.</li>
+          <li>Interactive geographic boundary mapping using GeoJSON.</li>
+          <li>Automated scheduled model re-training pipelines.</li>
+          <li>Enhanced Power BI mobile layout reporting.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

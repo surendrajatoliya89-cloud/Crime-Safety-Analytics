@@ -1,0 +1,135 @@
+﻿{% extends "base.html" %}
+{% set active_page = "dashboard" %}
+{% block title %}Executive Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="h3 fw-bold text-dark mb-1">National Crime Statistics & Safety Overview</h2>
+    <p class="text-muted mb-0">Multi-Year historical analytics across {{ kpis.total_states }} States and {{ kpis.total_cities }} major cities ({{ kpis.total_years_span }}).</p>
+  </div>
+  <div>
+    <a href="{{ url_for('prediction') }}" class="btn btn-primary">
+      <i class="bi bi-cpu me-1"></i> Predict Scenario Risk
+    </a>
+  </div>
+</div>
+
+<!-- 5 KPI Cards Section -->
+<div class="row g-3 mb-4">
+  <div class="col-md">
+    <div class="kpi-card shadow-sm">
+      <div class="kpi-label">Total Reported Incidents</div>
+      <div class="kpi-value">{{ kpis.total_incidents }}</div>
+      <small class="text-muted">Spanning {{ kpis.total_years_span }}</small>
+    </div>
+  </div>
+  <div class="col-md">
+    <div class="kpi-card shadow-sm">
+      <div class="kpi-label">Geographic Coverage</div>
+      <div class="kpi-value text-indigo fs-4 mt-1">{{ kpis.total_states }} States</div>
+      <small class="text-muted">{{ kpis.total_cities }} Metropolitan Hubs</small>
+    </div>
+  </div>
+  <div class="col-md">
+    <div class="kpi-card shadow-sm">
+      <div class="kpi-label">Most Common Crime</div>
+      <div class="kpi-value text-primary fs-4 mt-1">{{ kpis.most_common_crime }}</div>
+      <small class="text-muted">{{ kpis.most_common_crime_pct }}% of all incidents</small>
+    </div>
+  </div>
+  <div class="col-md">
+    <div class="kpi-card shadow-sm">
+      <div class="kpi-label">Most Common Severity</div>
+      <div class="kpi-value text-success fs-4 mt-1">{{ kpis.top_severity }}</div>
+      <small class="text-muted">{{ kpis.top_severity_pct }}% of total volume</small>
+    </div>
+  </div>
+  <div class="col-md">
+    <div class="kpi-card shadow-sm">
+      <div class="kpi-label">Peak Incident Month</div>
+      <div class="kpi-value text-warning fs-4 mt-1">{{ kpis.top_month }}</div>
+      <small class="text-muted">{{ kpis.top_month_count }} recorded incidents</small>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js Charts Grid -->
+<div class="row g-4">
+  <!-- Chart: Multi-Year Incident Progression (2021-2024) -->
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title d-flex justify-content-between">
+        <span><i class="bi bi-graph-up-arrow text-primary me-2"></i>Year-over-Year Crime Progression (2021–2024)</span>
+        <span class="badge bg-primary">Annual</span>
+      </div>
+      <div style="height: 280px;">
+        <canvas id="yearlyTrendChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart: Incidents by State -->
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title d-flex justify-content-between">
+        <span><i class="bi bi-map-fill text-info me-2"></i>Reported Incidents by State</span>
+        <span class="badge bg-light text-dark border">State-Level</span>
+      </div>
+      <div style="height: 280px;">
+        <canvas id="stateChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart: Incidents by City -->
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title d-flex justify-content-between">
+        <span><i class="bi bi-buildings-fill text-indigo me-2"></i>Reported Incidents by City</span>
+        <span class="badge bg-light text-dark border">Municipal</span>
+      </div>
+      <div style="height: 280px;">
+        <canvas id="cityChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart 1: Crime by Type -->
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title d-flex justify-content-between">
+        <span><i class="bi bi-bar-chart-fill text-success me-2"></i>Incidents by Crime Classification</span>
+        <span class="badge bg-light text-dark border">Categorical</span>
+      </div>
+      <div style="height: 280px;">
+        <canvas id="crimeTypeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart: Monthly Seasonality -->
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title">
+        <i class="bi bi-calendar3 text-warning me-2"></i>Monthly Seasonality
+      </div>
+      <div style="height: 260px;">
+        <canvas id="crimeTrendChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart 5: Severity Distribution -->
+  <div class="col-lg-6">
+    <div class="chart-card">
+      <div class="chart-title">
+        <i class="bi bi-pie-chart-fill text-danger me-2"></i>Severity Breakdown Ratio
+      </div>
+      <div style="height: 260px;">
+        <canvas id="severityChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

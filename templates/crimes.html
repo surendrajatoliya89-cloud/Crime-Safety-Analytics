@@ -1,0 +1,149 @@
+﻿{% extends "base.html" %}
+{% set active_page = "crimes" %}
+{% block title %}Historical Crime Records{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h3 class="h4 fw-bold mb-1">Historical Incident Database (2021–2024)</h3>
+        <p class="text-muted small mb-0">Search and filter reported incidents by Year, State, City, Area and Crime Type.</p>
+      </div>
+      <span class="badge bg-primary fs-6">Source: {{ db_source }}</span>
+    </div>
+
+    <!-- Multi-Filter Form with Year -->
+    <form method="GET" action="{{ url_for('crimes') }}" class="row g-2 align-items-end mb-3">
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">Search</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" class="form-control" placeholder="Search..." value="{{ search_query or '' }}">
+        </div>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">Year</label>
+        <select name="year" class="form-select">
+          <option value="All">All Years</option>
+          {% for y in years %}
+          <option value="{{ y }}" {% if selected_year == y|string or selected_year == y %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">State</label>
+        <select name="state" class="form-select">
+          <option value="All">All States</option>
+          {% for s in states %}
+          <option value="{{ s }}" {% if selected_state == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">City</label>
+        <select name="city" class="form-select">
+          <option value="All">All Cities</option>
+          {% for c in cities %}
+          <option value="{{ c }}" {% if selected_city == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">Crime Type</label>
+        <select name="crime" class="form-select">
+          <option value="All">All Types</option>
+          {% for cr in crime_types %}
+          <option value="{{ cr }}" {% if selected_crime == cr %}selected{% endif %}>{{ cr }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2 d-flex gap-1">
+        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-1"></i>Filter</button>
+        <a href="{{ url_for('crimes') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></a>
+      </div>
+    </form>
+
+    <div class="small text-muted mb-3">
+      Showing <strong>{{ records|length }}</strong> of <strong>{{ total_count }}</strong> matching incidents.
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-responsive">
+      <table class="table table-hover align-middle border">
+        <thead class="table-light">
+          <tr class="small text-uppercase">
+            <th>Incident ID</th>
+            <th>Year</th>
+            <th>Date</th>
+            <th>State</th>
+            <th>City</th>
+            <th>Area</th>
+            <th>Crime Type</th>
+            <th>Severity</th>
+            <th>Day / Time</th>
+            <th>Risk Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td class="fw-bold font-monospace small text-primary">{{ r.Incident_ID }}</td>
+            <td><span class="badge bg-dark">{{ r.Year }}</span></td>
+            <td class="small">{{ r.Date }}</td>
+            <td><span class="badge bg-light text-dark border">{{ r.State }}</span></td>
+            <td><span class="badge bg-secondary">{{ r.City }}</span></td>
+            <td><span class="fw-medium">{{ r.Area }}</span></td>
+            <td><strong>{{ r.Crime_Type }}</strong></td>
+            <td>
+              {% if r.Severity_Level == 'High' %}
+                <span class="badge bg-danger">High</span>
+              {% elif r.Severity_Level == 'Medium' %}
+                <span class="badge bg-warning text-dark">Medium</span>
+              {% else %}
+                <span class="badge bg-success">Low</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="small">{{ r.Day_of_Week }}</div>
+              <div class="text-muted" style="font-size: 0.75rem;">{{ r.Time_Category }}</div>
+            </td>
+            <td>
+              {% if r.Crime_Risk_Level == 'High' %}
+                <span class="badge-risk-high">High Risk</span>
+              {% elif r.Crime_Risk_Level == 'Medium' %}
+                <span class="badge-risk-medium">Medium Risk</span>
+              {% else %}
+                <span class="badge-risk-low">Low Risk</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="10" class="text-center py-4 text-muted">
+              No crime records matched your search criteria.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    {% if total_pages > 1 %}
+    <nav class="d-flex justify-content-between align-items-center mt-3">
+      <span class="small text-muted">Page {{ current_page }} of {{ total_pages }}</span>
+      <ul class="pagination pagination-sm mb-0">
+        {% if current_page > 1 %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('crimes', page=current_page-1, q=search_query, year=selected_year, state=selected_state, city=selected_city, area=selected_area, crime=selected_crime) }}">Previous</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">{{ current_page }}</span></li>
+        {% if current_page < total_pages %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('crimes', page=current_page+1, q=search_query, year=selected_year, state=selected_state, city=selected_city, area=selected_area, crime=selected_crime) }}">Next</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,179 @@
+﻿{% extends "base.html" %}
+{% set active_page = "map" %}
+{% block title %}Interactive India Crime Map{% endblock %}
+
+{% block extra_head %}
+<!-- Leaflet 2D Map CSS (Lightweight & Open-Source) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+  #indiaMap {
+    height: 540px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 1;
+  }
+  .city-stat-badge {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+  }
+  .leaflet-popup-content {
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="h3 fw-bold text-dark mb-1"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Interactive India Crime Map</h2>
+    <p class="text-muted mb-0">Geographic distribution of reported crime statistics across 7 States and 8 Metropolitan hubs.</p>
+  </div>
+  <div class="d-flex gap-2 align-items-center">
+    <span class="badge bg-light text-dark border p-2"><i class="bi bi-circle-fill text-danger me-1"></i>High Incident Density</span>
+    <span class="badge bg-light text-dark border p-2"><i class="bi bi-circle-fill text-warning me-1"></i>Moderate Density</span>
+    <span class="badge bg-light text-dark border p-2"><i class="bi bi-circle-fill text-primary me-1"></i>Standard Density</span>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <!-- Main Map Canvas -->
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-3">
+        <div id="indiaMap"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- City & State Summary Panel -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm border-0 mb-3">
+      <div class="card-body p-3">
+        <h5 class="h6 fw-bold mb-3 border-bottom pb-2">
+          <i class="bi bi-bar-chart-steps text-primary me-2"></i>Metropolitan Incident Rankings
+        </h5>
+        <div class="list-group list-group-flush small" id="cityRankingsList">
+          {% for c in city_stats %}
+          <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+            <div>
+              <strong class="d-block text-dark">{{ c.city }}</strong>
+              <small class="text-muted">{{ c.state }} &bull; Top: {{ c.top_crime }}</small>
+            </div>
+            <span class="badge {% if c.total >= 200 %}bg-danger{% elif c.total >= 150 %}bg-warning text-dark{% else %}bg-primary{% endif %} rounded-pill fs-7">
+              {{ c.total }} cases
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Info Card -->
+    <div class="card shadow-sm border-0 bg-white p-3">
+      <div class="small text-secondary">
+        <div class="fw-bold text-dark mb-1"><i class="bi bi-info-circle me-1 text-primary"></i>How to Interact with Map:</div>
+        <ul class="ps-3 mb-0">
+          <li><strong>Click any circle marker</strong> to inspect detailed local crime types, severity ratio, and high-risk case counts.</li>
+          <li>Marker radius corresponds proportionally to historical incident volume.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- State Summary Cards Grid -->
+<div class="card shadow-sm border-0 p-4 bg-white mb-4">
+  <h5 class="h6 fw-bold mb-3 border-bottom pb-2"><i class="bi bi-building me-2 text-primary"></i>State-by-State Overview</h5>
+  <div class="row g-3 text-center">
+    {% for s, count in state_counts.items() %}
+    <div class="col-6 col-md-3">
+      <div class="p-2 border rounded bg-light">
+        <div class="small text-muted text-truncate">{{ s }}</div>
+        <div class="fw-bold fs-5 text-primary">{{ count }}</div>
+        <div class="small text-secondary">Incidents</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Leaflet JS CDN -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // 1. Initialize Leaflet Map centered on India
+    const map = L.map('indiaMap', {
+      center: [21.5000, 78.9629],
+      zoom: 5,
+      minZoom: 4,
+      maxZoom: 9
+    });
+
+    // 2. Add OpenStreetMap Tile Layer (Free, reliable, no API key needed)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 18
+    }).addTo(map);
+
+    // 3. City Data provided by Flask backend
+    const cityData = {{ city_stats | tojson | safe }};
+
+    cityData.forEach(function(item) {
+      // Determine circle color & radius based on volume
+      let fillColor = "#3b82f6"; // Blue
+      let radius = 18;
+      
+      if (item.total >= 200) {
+        fillColor = "#ef4444"; // Red
+        radius = 26;
+      } else if (item.total >= 150) {
+        fillColor = "#f59e0b"; // Amber
+        radius = 22;
+      }
+
+      // Add circle marker
+      const circle = L.circleMarker([item.lat, item.lng], {
+        radius: radius,
+        fillColor: fillColor,
+        color: "#ffffff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.8
+      }).addTo(map);
+
+      // Bind rich descriptive popup
+      const popupContent = `
+        <div style="min-width: 190px;">
+          <h6 style="margin: 0 0 4px 0; font-weight: bold; color: #1e3a8a;">${item.city}</h6>
+          <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">State: ${item.state}</div>
+          <hr style="margin: 4px 0 8px 0; border: none; border-top: 1px solid #e2e8f0;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span>Reported Incidents:</span>
+            <strong>${item.total}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span>Top Crime:</span>
+            <strong>${item.top_crime}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span>High Risk Cases:</span>
+            <span style="color: #ef4444; font-weight: bold;">${item.high_risk_count}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Low Severity Share:</span>
+            <span style="color: #10b981; font-weight: bold;">${item.low_sev_pct}%</span>
+          </div>
+        </div>
+      `;
+      circle.bindPopup(popupContent);
+    });
+  });
+</script>
+{% endblock %}
