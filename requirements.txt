@@ -1,8 +1,7 @@
-Flask
+streamlit
 pandas
 numpy
+plotly
+pydeck
 scikit-learn
 joblib
-mysql-connector-python
-matplotlib
-gunicorn
